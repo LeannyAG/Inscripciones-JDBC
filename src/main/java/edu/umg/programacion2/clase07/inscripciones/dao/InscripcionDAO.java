@@ -197,7 +197,34 @@ public class InscripcionDAO {
     public List<Estudiante> listarEstudiantesDeCurso(String nombreCurso) throws SQLException {
         List<Estudiante> resultado = new ArrayList<>();
         // TODO: completar.
+        String sql =
+                "SELECT e.id, e.nombre, e.carnet " +
+                "FROM inscripciones i " +
+                "JOIN estudiantes e ON i.estudiante_id = e.id " +
+                "JOIN cursos c ON i.curso_id = c.id " +
+                "WHERE c.nombre = ?";
 
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, nombreCurso);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Estudiante estudiante = new Estudiante(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("carnet")
+                    );
+
+                    resultado.add(estudiante);
+                }
+            }
+        }
+
+    
         return resultado;
     }
 
