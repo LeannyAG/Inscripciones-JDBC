@@ -306,6 +306,26 @@ public class InscripcionDAO {
      */
     public Optional<String> cursoConMasInscritos() throws SQLException {
         // TODO: completar (ver pistas arriba).
+    	 String sql =
+                 "SELECT c.nombre, COUNT(*) AS total " +
+                 "FROM inscripciones i " +
+                 "JOIN cursos c ON i.curso_id = c.id " +
+                 "GROUP BY c.nombre " +
+                 "ORDER BY total DESC " +
+                 "LIMIT 1";
+
+         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+              PreparedStatement ps = conexion.prepareStatement(sql);
+              ResultSet resultado = ps.executeQuery()) {
+
+             if (resultado.next()) {
+
+                 return Optional.of(
+                         resultado.getString("nombre")
+                 );
+             }
+         }
+
         return Optional.empty();
     }
 }
