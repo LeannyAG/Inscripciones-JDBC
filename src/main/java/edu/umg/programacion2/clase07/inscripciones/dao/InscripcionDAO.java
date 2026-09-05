@@ -251,6 +251,33 @@ public class InscripcionDAO {
      *    Optional.empty().
      */
     public Optional<Double> promedioDeEstudiante(String carnet) throws SQLException {
+    	
+    	String sql =
+                "SELECT AVG(i.nota) AS promedio " +
+                "FROM inscripciones i " +
+                "JOIN estudiantes e ON i.estudiante_id = e.id " +
+                "WHERE e.carnet = ?";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, carnet);
+
+            try (ResultSet resultado = ps.executeQuery()) {
+
+                if (resultado.next()) {
+
+                    if (resultado.getObject("promedio") == null) {
+                        return Optional.empty();
+                    }
+
+                    return Optional.of(
+                            resultado.getDouble("promedio")
+                    );
+                }
+            }
+        }
+
         // TODO: completar (ver pistas arriba, especialmente el caso NULL).
         return Optional.empty();
     }
